@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{%- include head.html -%}
+<body>
+  <img src="/assets/images/cappadavide_logo.png" alt="Profile Picture" class="profile-picture">
+  <div class="container">
+    {% include header.html %}
+  </div>
+  
+  <div class="content-container">
+    
+    <div class="content">
+        <div>{{ content }}</div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const titles = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      titles.forEach(title => {
+        const catText = document.createElement("p");
+        catText.textContent = "> cat " + title.textContent;
+        title.before(catText);
+      });
+
+      const paragraphs = document.querySelectorAll(".content p");
+      paragraphs.forEach(paragraph => {
+        if (!paragraph.textContent.startsWith("$ cat")) {
+          const cursor = document.createElement("span");
+          cursor.className = "cursor";
+          paragraph.appendChild(cursor);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

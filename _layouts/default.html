@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{%- include head.html -%}
+<body>
+  <img src="/assets/images/cappadavide_logo.png" alt="Profile Picture" class="profile-picture">
+  <div class="social-links">
+    <a href="https://github.com/jekyll"><img src="/assets/images/github_pixel_logo.png" alt="Icona PNG" width="32px" height="32px"> </a>
+    <a href="https://github.com/jekyll"><img src="/assets/images/linkedin_pixel2.png" alt="Icona PNG" width="32px" height="32px"> </a>
+    <a href="https://github.com/jekyll"><img src="/assets/images/ig_logo_pixel.png" alt="Icona PNG" width="32px" height="32px"> </a>
+  </div>
+  <div class="container">
+    {% include header.html %}
+  </div>
+  
+  <div class="content-container">
+    
+    <div class="content">
+        <div>{{ content }}</div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const titles = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+      titles.forEach(title => {
+        const catText = document.createElement("p");
+        catText.textContent = "> cat " + title.textContent;
+        title.before(catText);
+      });
+
+      const paragraphs = document.querySelectorAll(".content p");
+      paragraphs.forEach(paragraph => {
+        if (!paragraph.textContent.startsWith("$ cat")) {
+          const cursor = document.createElement("span");
+          cursor.className = "cursor";
+          paragraph.appendChild(cursor);
+        }
+      });
+    });
+  </script>
+  <div class="container">
+  {% include footer.html %}
+  </div>
+</body>
+</html>
