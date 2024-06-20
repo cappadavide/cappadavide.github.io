@@ -22,15 +22,6 @@
         catText.textContent = "> cat " + title.textContent;
         title.before(catText);
       });
-
-      const paragraphs = document.querySelectorAll(".content p");
-      paragraphs.forEach(paragraph => {
-        if (!paragraph.textContent.startsWith("$ cat")) {
-          const cursor = document.createElement("span");
-          cursor.className = "cursor";
-          paragraph.appendChild(cursor);
-        }
-      });
     });
   </script>
 </body>
