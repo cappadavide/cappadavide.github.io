@@ -28,6 +28,7 @@ github_username:  cappadavide
 header_pages:
   - index.md
   - about.md
+  - adf-diagram.md
 # Build settings
 theme: minima
 plugins:
