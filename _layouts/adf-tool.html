@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- include head2.html -%}
+<body>
+  <button class="toggle-mode" onclick="toggleMode()" id="modeToggle">🌙 Toggle Dark Mode</button>
+  <h1>ADF Pipeline to Draw.io Diagram Converter</h1>
+
+  <label for="jsonInput">Pipeline JSON:</label>
+  <textarea id="jsonInput" placeholder="Paste your ADF pipeline JSON here..."></textarea>
+
+  <label for="orientation">Orientation:</label>
+  <select id="orientation">
+    <option value="portrait">Portrait (vertical)</option>
+    <option value="landscape">Landscape (horizontal)</option>
+  </select>
+    <label for="headerColor">Header Color:</label>
+    <input type="color" id="headerColor" value="#e5e5e5" />
+    <label for="bodyColor">Body Color:</label>
+    <input type="color" id="bodyColor" value="#ffffff" />
+    <label for="footerColor">Footer Color:</label>
+    <input type="color" id="footerColor" value="#e5e5e5" />
+
+  <div id="dropArea"
+     style="margin-top: 2rem; padding: 1.5rem; border: 2px dashed #888; text-align: center; border-radius: 8px; cursor: pointer;">
+    <strong>Drop your ADF pipeline JSON here</strong><br />
+    <span style="font-size: 0.9em;">or click to select a file</span>
+    <input type="file" accept=".json" style="display: none;" id="fileInput" />
+    </div>
+
+  <br />
+  <button onclick="handleGenerate()">Generate Draw.io XML</button>
+  <button id="downloadButton" style="display:none;" onclick="downloadXml()">Download XML</button>
+
+  <h2>Output:</h2>
+  <textarea id="outputXml" readonly></textarea>
+
+  <script src="/assets/js/adf_to_drawio.js"></script>
+  <script>
+    function handleGenerate() {
+      const input = document.getElementById('jsonInput').value;
+      const orientation = document.getElementById('orientation').value;
+      const output = document.getElementById('outputXml');
+
+      try {
+        const parsed = JSON.parse(input);
+        const xml = generateDrawioXmlFromAdf(parsed, orientation);
+        output.value = xml;
+        downloadButton.style.display = 'inline-block';
+
+        } catch (e) {
+        output.value = 'ERROR: ' + e.message;
+      }
+    }
+    function downloadXml() {
+      const output = document.getElementById('outputXml').value;
+      const blob = new Blob([output], { type: 'application/xml' }); 
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'drawio-diagram.xml';
+      link.click();
+   }
+    function toggleMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      localStorage.setItem('darkMode', isDark);
+      const toggleBtn = document.getElementById("modeToggle");
+      toggleBtn.innerText = isDark ? "🌞 Toggle Light Mode" : "🌙 Toggle Dark Mode";
+    }
+
+    window.onload = () => {
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      if (isDark) document.documentElement.classList.add('dark');
+      document.getElementById("modeToggle").innerText = isDark ? "🌞 Toggle Light Mode" : "🌙 Toggle Dark Mode";
+    };
+    const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
+
+  // Open file dialog on click
+  dropArea.addEventListener("click", () => fileInput.click());
+
+  // Handle file selection
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length) {
+      handleFile(e.target.files[0]);
+    }
+  });
+
+  // Drag & drop
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = "#4CAF50";
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.style.borderColor = "#888";
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = "#888";
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const jsonInput = document.getElementById("jsonInput");
+      jsonInput.value = e.target.result;
+      //handleGenerate(); // auto-generate after drop
+    };
+    reader.readAsText(file);
+  }
+  </script>
+</body>
+{% include footer2.html %}
+</html>

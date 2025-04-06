@@ -1,0 +1,44 @@
+body {
+  font-family: monospace;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: white;
+  color: #111;
+  transition: background 0.3s, color 0.3s;
+}
+.dark body {
+  background-color: #111;
+  color: #eee;
+}
+label { font-weight: bold; display: block; margin-top: 1rem; }
+
+#colorsContainer {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+textarea, select, button {
+  font-family: monospace;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+textarea {
+    height: 100px;
+}
+.dark textarea, .dark select, .dark button {
+  background-color: #222;
+  color: #eee;
+  border: 1px solid #555;
+}
+button.toggle-mode {
+  width: auto;
+  float: right;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+a { text-decoration: none;  color:  #FFD96F; }
+a:hover { text-decoration: none; color: #000; background-color: #DBDBDB; }

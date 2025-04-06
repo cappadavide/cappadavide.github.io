@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADF to Draw.io Generator</title>
+  <style>
+    body {
+      font-family: monospace;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: white;
+      color: #111;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark body {
+      background-color: #111;
+      color: #eee;
+    }
+    label { font-weight: bold; display: block; margin-top: 1rem; }
+
+    #colorsContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }
+    textarea, select, button {
+      font-family: monospace;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      width: 100%;
+    }
+    textarea {
+        height: 100px;
+    }
+    .dark textarea, .dark select, .dark button {
+      background-color: #222;
+      color: #eee;
+      border: 1px solid #555;
+    }
+    button.toggle-mode {
+      width: auto;
+      float: right;
+      margin-top: 0;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-mode" onclick="toggleMode()" id="modeToggle">🌙 Toggle Dark Mode</button>
+  <h1>ADF Pipeline to Draw.io Generator</h1>
+
+  <label for="jsonInput">Pipeline JSON:</label>
+  <textarea id="jsonInput" placeholder="Paste your ADF pipeline JSON here..."></textarea>
+
+  <label for="orientation">Orientation:</label>
+  <select id="orientation">
+    <option value="portrait">Portrait (vertical)</option>
+    <option value="landscape">Landscape (horizontal)</option>
+  </select>
+    <label for="headerColor">Header Color:</label>
+    <input type="color" id="headerColor" value="#e5e5e5" />
+    <label for="bodyColor">Body Color:</label>
+    <input type="color" id="bodyColor" value="#ffffff" />
+    <label for="footerColor">Footer Color:</label>
+    <input type="color" id="footerColor" value="#e5e5e5" />
+
+  <div id="dropArea"
+     style="margin-top: 2rem; padding: 1.5rem; border: 2px dashed #888; text-align: center; border-radius: 8px; cursor: pointer;">
+    <strong>Drop your ADF pipeline JSON here</strong><br />
+    <span style="font-size: 0.9em;">or click to select a file</span>
+    <input type="file" accept=".json" style="display: none;" id="fileInput" />
+    </div>
+
+  <br />
+  <button onclick="handleGenerate()">Generate Draw.io XML</button>
+
+  <h2>Output:</h2>
+  <textarea id="outputXml" readonly></textarea>
+
+  <script src="/assets/js/adf_to_drawio.js"></script>
+  <script>
+    function handleGenerate() {
+      const input = document.getElementById('jsonInput').value;
+      const orientation = document.getElementById('orientation').value;
+      const output = document.getElementById('outputXml');
+
+      try {
+        const parsed = JSON.parse(input);
+        const xml = generateDrawioXmlFromAdf(parsed, orientation);
+        output.value = xml;
+        } catch (e) {
+        output.value = 'ERROR: ' + e.message;
+      }
+    }
+    function toggleMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      localStorage.setItem('darkMode', isDark);
+      const toggleBtn = document.getElementById("modeToggle");
+      toggleBtn.innerText = isDark ? "🌞 Toggle Light Mode" : "🌙 Toggle Dark Mode";
+    }
+
+    window.onload = () => {
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      if (isDark) document.documentElement.classList.add('dark');
+      document.getElementById("modeToggle").innerText = isDark ? "🌞 Toggle Light Mode" : "🌙 Toggle Dark Mode";
+    };
+    const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
+
+  // Open file dialog on click
+  dropArea.addEventListener("click", () => fileInput.click());
+
+  // Handle file selection
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length) {
+      handleFile(e.target.files[0]);
+    }
+  });
+
+  // Drag & drop
+  dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = "#4CAF50";
+  });
+
+  dropArea.addEventListener("dragleave", () => {
+    dropArea.style.borderColor = "#888";
+  });
+
+  dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = "#888";
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const jsonInput = document.getElementById("jsonInput");
+      jsonInput.value = e.target.result;
+      //handleGenerate(); // auto-generate after drop
+    };
+    reader.readAsText(file);
+  }
+  </script>
+
+</body>
+</html>
